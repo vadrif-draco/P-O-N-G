@@ -7,7 +7,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage = new WelcomeScreen(false); // Launches welcome screen
+        stage = new WelcomeScreen(true); // Launches welcome screen
     }
     // Such a clean empty class, heh.
 }
