@@ -1,18 +1,21 @@
-package core;
+package core.welcome;
 
+import core.SFX;
+import core.game.GamePlayStage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static core.DebugSystem.*;
+import static core.welcome.DebugSystem.*;
 
-class WelcomeScreen extends Stage implements WelcomeScreenDefaults {
+public class WelcomeScreen extends Stage implements WelcomeScreenDefaults {
 
 
-    WelcomeScreen(boolean debugging) {
+    public WelcomeScreen(boolean debugging) {
         Bar l = new Bar("left");
         Bar r = new Bar("right");
         Ball b = new Ball();
@@ -29,9 +32,10 @@ class WelcomeScreen extends Stage implements WelcomeScreenDefaults {
         }
         pane.setStyle("-fx-background-size: stretch; -fx-background-color: #404040;");
 
-        setScene(new Scene(pane,
+        Scene welcomeScene = new Scene(pane,
                 Screen.getPrimary().getBounds().getWidth(),
-                Screen.getPrimary().getBounds().getHeight()));
+                Screen.getPrimary().getBounds().getHeight());
+        setScene(welcomeScene);
         initStyle(StageStyle.UNDECORATED);
 //        setFullScreen(true);
         setMaximized(true);
@@ -46,5 +50,11 @@ class WelcomeScreen extends Stage implements WelcomeScreenDefaults {
                 backgroundSimulation.start();
             }
         });
+
+        pane.setOnKeyPressed(eh ->{
+            if(eh.getCode()== KeyCode.P)
+                new GamePlayStage(this);
+        });
+
     }
 }

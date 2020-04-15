@@ -1,4 +1,4 @@
-package core;
+package core.welcome;
 
 public class DynamicCoords {
     // DYNAMIC COORDINATES ARE TO BE USED ONLY WITH PATH TRANSITIONS!!!!!!!!!!!!!!!!!!!!!!

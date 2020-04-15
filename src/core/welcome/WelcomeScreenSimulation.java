@@ -1,4 +1,4 @@
-package core;
+package core.welcome;
 
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-import static core.DebugSystem.*;
+import static core.welcome.DebugSystem.*;
 import static javafx.util.Duration.millis;
 
 class WelcomeScreenSimulation implements WelcomeScreenDefaults {
