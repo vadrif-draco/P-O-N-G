@@ -3,26 +3,22 @@ package core;
 import javafx.scene.media.AudioClip;
 
 public class SFX {
+    private AudioClip a;
+
     public SFX(String s) {
-        AudioClip a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
-        a.setCycleCount(1);
-        a.setRate(1);
-        a.play();
+        this(s, 1, 1);
     }
+
     public SFX(String s, int numOfLoops) {
-        AudioClip a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
-        a.setCycleCount(numOfLoops);
-        a.setRate(1);
-        a.play();
+        this(s, numOfLoops, 1);
     }
+
     public SFX(String s, double playRate) {
-        AudioClip a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
-        a.setCycleCount(1);
-        a.setRate(playRate);
-        a.play();
+        this(s, 1, playRate);
     }
+
     public SFX(String s, int numOfLoops, double playRate) {
-        AudioClip a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
+        a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
         a.setCycleCount(numOfLoops);
         a.setRate(playRate);
         a.play();

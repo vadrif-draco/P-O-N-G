@@ -12,26 +12,24 @@ public class Bar extends Rectangle {
 
     /**
      * Moves the Bar to a specific Y-axis position taking screen bounds in consideration
+     *
      * @param barMiddle
      */
-    public void moveTo(double barMiddle)
-    {
+    public void moveTo(double barMiddle) {
 
-        if(barMiddle <= getHeight()/2)
+        if (barMiddle <= getHeight() / 2)
             setTranslateY(0);
-        else if(barMiddle >= GameDefaults.SCREEN_HEIGHT-getHeight()/2)
-            setTranslateY(GameDefaults.SCREEN_HEIGHT-getHeight());
+        else if (barMiddle >= GameDefaults.SCREEN_HEIGHT - getHeight() / 2)
+            setTranslateY(GameDefaults.SCREEN_HEIGHT - getHeight());
         else
-            setTranslateY(barMiddle-getHeight()/2);
+            setTranslateY(barMiddle - getHeight() / 2);
     }
 
 
     /**
-     *
      * @return The middle Y-axis Bar position
      */
-    public double getPosition()
-    {
-        return getTranslateY()+getHeight()/2;
+    public double getPosition() {
+        return getTranslateY() + getHeight() / 2;
     }
 }

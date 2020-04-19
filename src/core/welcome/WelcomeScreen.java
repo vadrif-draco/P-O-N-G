@@ -1,60 +1,166 @@
 package core.welcome;
 
-import core.SFX;
+import core.Soundtrack;
 import core.game.GamePlayStage;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
-import static core.welcome.DebugSystem.*;
+import static core.DebugSystem.*;
+import static core.welcome.WelcomeScreenDefaults.screenHeight;
+import static core.welcome.WelcomeScreenDefaults.screenWidth;
 
-public class WelcomeScreen extends Stage implements WelcomeScreenDefaults {
+public class WelcomeScreen extends Stage {
 
-
-    public WelcomeScreen(boolean debugging) {
+    public WelcomeScreen(boolean globalDebugging) {
         Bar l = new Bar("left");
         Bar r = new Bar("right");
         Ball b = new Ball();
         WelcomeScreenSimulation backgroundSimulation = new WelcomeScreenSimulation(l, r, b);
 
-        Button startGame = new Button("Oh dear, oh dear. Gorgeous.");
+        EventHandler<MouseEvent> startGame = MouseEvent -> {
+            backgroundSimulation.resetAll();
+            new GamePlayStage(this, globalDebugging);
+        };
 
-        Pane pane = new Pane();
+        GridPane buttonsPane = new GridPane();
+        buttonsPane.setVgap(10);
 
-        pane.getChildren().addAll(l, r, b, startGame);
-        if (debugging) {
-            pane.getChildren().add(pseudoConsole);
-            startDebugging();
-        }
-        pane.setStyle("-fx-background-size: stretch; -fx-background-color: #404040;");
+        Label startGameButton = new WelcomeScreenButton("Play", startGame);
+        buttonsPane.addRow(0, startGameButton);
+        // TODO should turn into a screen that shows different game modes
+        // starts gameplay screen directly, for now.
 
-        Scene welcomeScene = new Scene(pane,
-                Screen.getPrimary().getBounds().getWidth(),
-                Screen.getPrimary().getBounds().getHeight());
+        Label skinsAndBGsButton = new WelcomeScreenButton("Skins & Backgrounds", null);
+        buttonsPane.addRow(1, skinsAndBGsButton);
+        // TODO should turn into a screen that shows bar skins, ball skins, backgrounds
+
+        Label achievementsButton = new WelcomeScreenButton("Achievements", null);
+        buttonsPane.addRow(2, achievementsButton);
+        // TODO should turn into a screen that shows achievements... lol
+
+        Label settingsButton = new WelcomeScreenButton("Settings", null);
+        buttonsPane.addRow(3, settingsButton);
+        // TODO do I have to type this out
+
+        Label exitButton = new WelcomeScreenButton("Exit", e -> {
+            new Soundtrack(this);
+        });
+        buttonsPane.addRow(4, exitButton);
+
+        buttonsPane.minWidthProperty().bind(screenWidth);
+        buttonsPane.minHeightProperty().bind(screenHeight);
+        buttonsPane.setAlignment(Pos.CENTER);
+
+        Label lbl = new Label("Press SPACE to reset simulation\n" +
+                "(Debug mode only) Hold SHIFT to slow ball down in gameplay");
+        lbl.setStyle("-fx-alignment: center; -fx-text-fill: #FF00FF; -fx-font-size: 32;");
+
+        Pane frontPane = new Pane();
+        frontPane.getChildren().addAll(lbl, buttonsPane);
+
+        Pane bgSimulationPane = new Pane();
+        bgSimulationPane.getChildren().addAll(l, r, b);
+        bgSimulationPane.setMinSize(screenWidth(), screenHeight());
+        bgSimulationPane.setStyle("-fx-background-size: stretch; -fx-background-color: #404040;");
+        bgSimulationPane.setCache(true);
+        bgSimulationPane.setCacheHint(CacheHint.QUALITY);
+
+        Pane rootPane = new Pane();
+        rootPane.getChildren().addAll(bgSimulationPane, frontPane);
+        rootPane.setStyle("-fx-background-size: stretch; -fx-background-color: #404040;");
+
+        Scene welcomeScene = new Scene(rootPane, screenWidth(), screenHeight());
+        welcomeScene.setFill(Color.BLACK);
+
         setScene(welcomeScene);
         initStyle(StageStyle.UNDECORATED);
-//        setFullScreen(true);
+        //setFullScreen(true);
         setMaximized(true);
-        show();
-        startGame.setOnAction(e -> {
-            new SFX("zawarudo", 1, 1.27);
-            if (!backgroundSimulation.isRunning()) backgroundSimulation.start();
-            else {
-                refreshConsole();
-                System.out.println("Help me God");
+
+        if (!backgroundSimulation.isRunning()) backgroundSimulation.start();
+        else {
+            refreshConsole();
+            backgroundSimulation.resetAll();
+            backgroundSimulation.start();
+        }
+
+        bgSimulationPane.requestFocus();
+        bgSimulationPane.setOnKeyPressed(eh -> {
+            if (eh.getCode() == KeyCode.SPACE) {
                 backgroundSimulation.resetAll();
                 backgroundSimulation.start();
             }
         });
 
-        pane.setOnKeyPressed(eh ->{
-            if(eh.getCode()== KeyCode.P)
-                new GamePlayStage(this);
-        });
+        Timeline launchTimeline = new Timeline();
 
+        if (globalDebugging) {
+            this.setOpacity(0.75);
+            bgSimulationPane.getChildren().add(pseudoConsole);
+            startDebugging();
+        } else {
+            // Fade in mechanism start
+
+            // INITIAL STATE
+            ColorAdjust adj = new ColorAdjust(0, -1, -1, 1);// Hue, Saturation, Brightness, Contrast
+            GaussianBlur blur = new GaussianBlur(32);
+            adj.setInput(blur);
+            bgSimulationPane.setEffect(adj);
+            // END OF INITIAL STATE
+
+            // NEXT STATES (in keyframed values)
+            KeyFrame k1 = new KeyFrame(Duration.millis(2000),
+                    new KeyValue(blur.radiusProperty(), 8),
+                    new KeyValue(adj.saturationProperty(), -0.8),
+                    new KeyValue(adj.brightnessProperty(), -0.95),
+                    new KeyValue(adj.contrastProperty(), 0.75)
+            );
+
+            KeyFrame k2 = new KeyFrame(Duration.millis(3500),
+                    new KeyValue(blur.radiusProperty(), 2),
+                    new KeyValue(adj.saturationProperty(), 0),
+                    new KeyValue(adj.brightnessProperty(), -0.5),
+                    new KeyValue(adj.contrastProperty(), 0.5)
+            );
+
+            KeyFrame k3 = new KeyFrame(Duration.millis(4000),
+                    new KeyValue(blur.radiusProperty(), 2),
+                    new KeyValue(adj.saturationProperty(), 0),
+                    new KeyValue(adj.brightnessProperty(), -0.5),
+                    new KeyValue(adj.contrastProperty(), 0.5)
+            );
+
+            KeyFrame k4 = new KeyFrame(Duration.millis(5000),
+                    new KeyValue(blur.radiusProperty(), 16, Interpolator.EASE_OUT),
+                    new KeyValue(adj.saturationProperty(), 0, Interpolator.EASE_OUT),
+                    new KeyValue(adj.brightnessProperty(), -0.25, Interpolator.EASE_OUT),
+                    new KeyValue(adj.contrastProperty(), 0.1, Interpolator.EASE_OUT)
+            );
+
+            bgSimulationPane.setCacheHint(CacheHint.SPEED);
+            launchTimeline.getKeyFrames().addAll(k1, k2, k3, k4);
+
+            launchTimeline.play(); // makes pane change effective periodically
+            // Fade in mechanism end
+        }
+
+        show();
     }
 }

@@ -7,8 +7,8 @@ import javafx.scene.input.KeyEvent;
 
 public class KeyboardPlayer extends Player {
 
-    private boolean isUp=false;
-    private boolean isDown=false;
+    private boolean isUp = false;
+    private boolean isDown = false;
 
     public KeyboardPlayer(Bar bar, Scene scene) {
         super(bar, scene);
@@ -17,10 +17,10 @@ public class KeyboardPlayer extends Player {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                double dy= 0.0;
-                if(isUp)
+                double dy = 0.0;
+                if (isUp)
                     dy -= GameDefaults.KEYBOARD_PITCH;
-                if(isDown)
+                if (isDown)
                     dy += GameDefaults.KEYBOARD_PITCH;
 
                 getBar().moveTo(getBar().getPosition() + dy);
@@ -38,9 +38,9 @@ public class KeyboardPlayer extends Player {
                     break;
             }
         };
-
-
         scene.setOnKeyPressed(pressedHandler);
+
+
         EventHandler<KeyEvent> releasedHandler = e -> {
             switch (e.getCode()) {
                 case UP:

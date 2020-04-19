@@ -2,13 +2,15 @@ package core.welcome;
 
 import javafx.scene.shape.Circle;
 
-class Ball extends Circle implements WelcomeScreenDefaults, MovableSprite {
+import static core.welcome.WelcomeScreenDefaults.*;
+
+class Ball extends Circle implements MovableSprite {
     DynamicCoords dCoords = new DynamicCoords();
 
     Ball() {
-        setRadius(barHeight / 8);
-        setCenterX(screenWidth / 2);
-        setCenterY(screenHeight / 2);
+        setRadius(barHeight() / 8);
+        setCenterX(screenWidth() / 2);
+        setCenterY(screenHeight() / 2);
         this.dCoords.set(getCenterX(), getCenterY());
 
         setStyle("-fx-fill: image-pattern(\"./media/wsball.png\"); -fx-smooth: true;");
@@ -20,9 +22,9 @@ class Ball extends Circle implements WelcomeScreenDefaults, MovableSprite {
 
     @Override
     public void resetPosition() {
-        setRadius(barHeight / 8);
-        setCenterX(screenWidth / 2);
-        setCenterY(screenHeight / 2);
+        setRadius(barHeight() / 8);
+        setCenterX(screenWidth() / 2);
+        setCenterY(screenHeight() / 2);
         this.dCoords.set(getCenterX(), getCenterY());
     }
 }

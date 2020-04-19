@@ -1,6 +1,8 @@
 package core.welcome;
 
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.PathTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.shape.Line;
@@ -8,10 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-import static core.welcome.DebugSystem.*;
+import static core.DebugSystem.print;
+import static core.DebugSystem.println;
+import static core.welcome.WelcomeScreenDefaults.*;
 import static javafx.util.Duration.millis;
 
-class WelcomeScreenSimulation implements WelcomeScreenDefaults {
+class WelcomeScreenSimulation {
 
     // Objects and paths that will be controlled.
     private Bar l, r;
@@ -21,8 +25,8 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
     private PathTransition rBarPT = new PathTransition();
 
     // *Some* control parameters
-    private double initialVelocity = 1; // velocity in pixels per millisecond
-    private double maxVelocity = 10, velocityRateOfChange = 0.05, changingVelocity = initialVelocity;
+    private double initialVelocity = 0.5; // velocity in pixels per millisecond
+    private double maxVelocity = 5, velocityRateOfChange = 0.025, changingVelocity = initialVelocity;
     private boolean running = false;
     private double m, c; // [Ball Motion Parameters] Slope and constant
 
@@ -62,15 +66,14 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
     void resetAll() {
         changingVelocity = initialVelocity;
 
-        // TODO actually center everything using PathTransition
         ballCollisionPT.stop();
         ball.resetPosition();
 
-        moveBar(l, screenHeight/2, 1, lBarPT);
+        moveBar(l, screenHeight() / 2, 1, lBarPT);
         l.resetPosition();
         lBarPT.stop();
 
-        moveBar(r, screenHeight/2, 1, rBarPT);
+        moveBar(r, screenHeight() / 2, 1, rBarPT);
         r.resetPosition();
         rBarPT.stop();
     }
@@ -95,12 +98,12 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
     // BALL MOTION MECHANICS SECTION
     private double generateFirstSlope() {
         // Generate random point
-        double x = Math.abs(100000 * rng.nextDouble()) % screenWidth;
+        double x = Math.abs(100000 * rng.nextDouble()) % screenWidth();
         // Next line is to avoid "x" values that would lead to near-vertical starting slopes
-        while (Math.abs(x - screenWidth / 2) < screenWidth / 8)
-            x = Math.abs(100000 * rng.nextDouble()) % screenWidth;
+        while (Math.abs(x - screenWidth() / 2) < screenWidth() / 8)
+            x = Math.abs(100000 * rng.nextDouble()) % screenWidth();
 
-        double y = Math.abs(100000 * rng.nextDouble()) % screenHeight;
+        double y = Math.abs(100000 * rng.nextDouble()) % screenHeight();
         // TODO avoid near-horizontal starting slopes too.
 
         println("Randomly generated initial point: (" + x + ", " + y + ")");
@@ -120,20 +123,21 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
             boolean[] possibilities = new boolean[4];
 
             // 0. LEFT SIDE: x = bar + radius, checking if y is within boundaries
-            if (m * (barXEnd + ball.r()) + c >= ball.r() &&
-                    m * (barXEnd + ball.r()) + c <= screenHeight) possibilities[0] = true;
+            if (m * (barXEnd() + ball.r()) + c >= ball.r() &&
+                    m * (barXEnd() + ball.r()) + c <= screenHeight()) possibilities[0] = true;
 
             // 1. TOP SIDE: y = radius, checking if x is within boundaries
-            if ((ball.r() - c) / m >= ball.r() + barXEnd &&
-                    (ball.r() - c) / m <= screenWidth - (ball.r() + barXEnd)) possibilities[1] = true;
+            if ((ball.r() - c) / m >= ball.r() + barXEnd() &&
+                    (ball.r() - c) / m <= screenWidth() - (ball.r() + barXEnd())) possibilities[1] = true;
 
             // 2. RIGHT SIDE: x = max - (bar + radius), checking if y is within boundaries
-            if (m * (screenWidth - (barXEnd + ball.r())) + c >= ball.r() &&
-                    m * (screenWidth - (barXEnd + ball.r())) + c <= screenHeight) possibilities[2] = true;
+            if (m * (screenWidth() - (barXEnd() + ball.r())) + c >= ball.r() &&
+                    m * (screenWidth() - (barXEnd() + ball.r())) + c <= screenHeight()) possibilities[2] = true;
 
             // 3. BOTTOM SIDE: y = max - radius, checking if x is within boundaries
-            if ((screenHeight - ball.r() - c) / m >= ball.r() + barXEnd &&
-                    (screenHeight - ball.r() - c) / m <= screenWidth - (ball.r() + barXEnd)) possibilities[3] = true;
+            if ((screenHeight() - ball.r() - c) / m >= ball.r() + barXEnd() &&
+                    (screenHeight() - ball.r() - c) / m <= screenWidth() - (ball.r() + barXEnd()))
+                possibilities[3] = true;
 
             // Randomly choosing one of the valid cases
             do {
@@ -153,26 +157,27 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
             // 0. LEFT SIDE: x = bar + radius, checking if y is within boundaries
             // Assume LEFT hit, then rebound possibilities are TOP or RIGHT or BOTTOM, discard LEFT.
             // Same logic for all of them.
-            if (choice != 0 && m * (barXEnd + ball.r()) + c >= ball.r() &&
-                    m * (barXEnd + ball.r()) + c <= screenHeight) choice = 0;
+            if (choice != 0 && m * (barXEnd() + ball.r()) + c >= ball.r() &&
+                    m * (barXEnd() + ball.r()) + c <= screenHeight()) choice = 0;
 
-            // 1. TOP SIDE: y = radius, checking if x is within boundaries
-            else if (choice != 1 && (ball.r() - c) / m >= ball.r() + barXEnd &&
-                    (ball.r() - c) / m <= screenWidth - (ball.r() + barXEnd)) choice = 1;
+                // 1. TOP SIDE: y = radius, checking if x is within boundaries
+            else if (choice != 1 && (ball.r() - c) / m >= ball.r() + barXEnd() &&
+                    (ball.r() - c) / m <= screenWidth() - (ball.r() + barXEnd())) choice = 1;
 
-            // 2. RIGHT SIDE: x = max - (bar + radius), checking if y is within boundaries
-            else if (choice != 2 && m * (screenWidth - (barXEnd + ball.r())) + c >= ball.r() &&
-                    m * (screenWidth - (barXEnd + ball.r())) + c <= screenHeight) choice = 2;
+                // 2. RIGHT SIDE: x = max - (bar + radius), checking if y is within boundaries
+            else if (choice != 2 && m * (screenWidth() - (barXEnd() + ball.r())) + c >= ball.r() &&
+                    m * (screenWidth() - (barXEnd() + ball.r())) + c <= screenHeight()) choice = 2;
 
-            // 3. BOTTOM SIDE: y = max - radius, checking if x is within boundaries
-            else if (choice != 3 && (screenHeight - ball.r() - c) / m >= ball.r() + barXEnd &&
-                    (screenHeight - ball.r() - c) / m <= screenWidth - (ball.r() + barXEnd)) choice = 3;
+                // 3. BOTTOM SIDE: y = max - radius, checking if x is within boundaries
+            else if (choice != 3 && (screenHeight() - ball.r() - c) / m >= ball.r() + barXEnd() &&
+                    (screenHeight() - ball.r() - c) / m <= screenWidth() - (ball.r() + barXEnd())) choice = 3;
         }
 
         switch (choice) {
             case 0: // LEFT SIDE: x = radius + bar
-                ball.dCoords.setX(ball.r() + barXEnd);
-                ball.dCoords.setY(m * (barXEnd + ball.r()) + c - ball.r());
+                ball.dCoords.setX(ball.r() + barXEnd());
+//                ball.dCoords.setY(m * (ball.r() + barXEnd()) + c - ball.r());
+                ball.dCoords.setY(m * (ball.r() + barXEnd()) + c);
                 println("Case 0 done\n");
                 break;
             case 1: // TOP SIDE: y = radius
@@ -181,13 +186,13 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
                 println("Case 1 done\n");
                 break;
             case 2: // RIGHT SIDE: x = max - (radius + bar)
-                ball.dCoords.setX(screenWidth - (ball.r() + barXEnd));
-                ball.dCoords.setY(m * (screenWidth - (barXEnd + ball.r())) + c);
+                ball.dCoords.setX(screenWidth() - (ball.r() + barXEnd()));
+                ball.dCoords.setY(m * (screenWidth() - (barXEnd() + ball.r())) + c);
                 println("Case 2 done\n");
                 break;
             case 3: // BOTTOM SIDE: y = max - radius
-                ball.dCoords.setX((screenHeight - ball.r() - c) / m);
-                ball.dCoords.setY(screenHeight - ball.r());
+                ball.dCoords.setX((screenHeight() - ball.r() - c) / m);
+                ball.dCoords.setY(screenHeight() - ball.r());
                 println("Case 3 done\n");
         }
 
@@ -199,9 +204,9 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
         double durationForBar = Math.sqrt(ball.dCoords.getDeltaXSquared() + ball.dCoords.getDeltaYSquared())
                 / changingVelocity / 2.424;
 
-        if (ball.dCoords.getX() > screenWidth / 2) {
+        if (ball.dCoords.getX() > screenWidth() / 2) {
             moveBar(r, ball.dCoords.getY(), durationForBar, rBarPT);
-        } else if (ball.dCoords.getX() < screenWidth / 2) {
+        } else if (ball.dCoords.getX() < screenWidth() / 2) {
             moveBar(l, ball.dCoords.getY(), durationForBar, lBarPT);
         } else {
             moveBar(r, ball.dCoords.getY(), durationForBar, rBarPT);
@@ -225,13 +230,13 @@ class WelcomeScreenSimulation implements WelcomeScreenDefaults {
         changingVelocity += (changingVelocity < maxVelocity) ? changingVelocity * velocityRateOfChange : 0.0000001;
         velocityRateOfChange -= velocityRateOfChange * 0.01;
 
-        if (ball.dCoords.getX() == ball.r() + barXEnd) {
+        if (ball.dCoords.getX() == ball.r() + barXEnd()) {
             moveBall(0);
         } else if (ball.dCoords.getY() == ball.r()) {
             moveBall(1);
-        } else if (ball.dCoords.getX() == screenWidth - (ball.r() + barXEnd)) {
+        } else if (ball.dCoords.getX() == screenWidth() - (ball.r() + barXEnd())) {
             moveBall(2);
-        } else if (ball.dCoords.getY() == screenHeight - ball.r()) {
+        } else if (ball.dCoords.getY() == screenHeight() - ball.r()) {
             moveBall(3);
         }
     };

@@ -12,56 +12,58 @@ import javafx.stage.StageStyle;
 
 
 public class GamePlayStage extends Stage {
-    private Pane pane = new Pane();
 
+    static boolean debugging = false;
+
+    private Pane pane = new Pane();
 
     private Ball ball1 = new Ball();
     private Bar leftBar = new Bar();
     private Bar rightBar = new Bar();
 
     //takes the previous Stage to be able to navigate between them
-    public GamePlayStage(Stage callerStage)
-    {
+    public GamePlayStage(Stage callerStage, boolean globalDebugging) {
         this();
-        if(callerStage != null)
+        debugging = globalDebugging;
+        if (debugging) this.setOpacity(0.75);
+        if (callerStage != null)
             callerStage.hide();
     }
 
-    public GamePlayStage()
-    {
+    public GamePlayStage() {
         Scene scene = new Scene(pane,
                 Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight());
+
         setScene(scene);
         initBackground();
         createGameSprites();
         show();
 
-        Player player1 = new MousePlayer(rightBar,scene);
-        Player player2 = new KeyboardPlayer(leftBar,scene);
+        Player player1 = new MousePlayer(rightBar, scene);
+        Player player2 = new KeyboardPlayer(leftBar, scene);
 
-        GameDriver gd = new GameDriver(ball1,player1,player2,pane);
+        GameDriver gd = new GameDriver(ball1, player1, player2, pane);
     }
 
 
-    private void initBackground()
-    {
+    private void initBackground() {
 
         pane.setStyle("-fx-background-size: stretch; -fx-background-color: #404040;");
         setMaximized(true);
         initStyle(StageStyle.UNDECORATED);   // Fullscreen Property
 
         Circle circle = new Circle();
-        circle.setRadius(GameDefaults.SCREEN_HEIGHT/2/1.618);
-        circle.setCenterX(GameDefaults.SCREEN_WIDTH/2);
-        circle.setCenterY(GameDefaults.SCREEN_HEIGHT/2);
+        circle.setRadius(GameDefaults.SCREEN_HEIGHT / 2 / 1.618);
+        circle.setCenterX(GameDefaults.SCREEN_WIDTH / 2);
+        circle.setCenterY(GameDefaults.SCREEN_HEIGHT / 2);
         circle.setStroke(Color.WHITE);
         circle.setStrokeWidth(3);
         circle.setFill(Color.valueOf("#404040"));
 
         Line line = new Line();
-        line.setStartX(GameDefaults.SCREEN_WIDTH/2);
-        line.setEndX(GameDefaults.SCREEN_WIDTH/2);
+        line.setStartX(GameDefaults.SCREEN_WIDTH / 2);
+        line.setEndX(GameDefaults.SCREEN_WIDTH / 2);
         line.setStartY(0);
         line.setEndY(GameDefaults.SCREEN_HEIGHT);
         line.setFill(Color.WHITE);
@@ -76,17 +78,16 @@ public class GamePlayStage extends Stage {
     /**
      * Creates Playable objects on the screen
      */
-    private void createGameSprites()
-    {
+    private void createGameSprites() {
 
-        ball1.setTranslateX(GameDefaults.SCREEN_WIDTH/2);
-        ball1.setTranslateY(GameDefaults.SCREEN_HEIGHT/2);
+        ball1.setTranslateX(GameDefaults.SCREEN_WIDTH / 2);
+        ball1.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2);
 
         leftBar.setTranslateX(200);
-        leftBar.setTranslateY(GameDefaults.SCREEN_HEIGHT/2 - leftBar.getHeight()/2);
+        leftBar.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2 - leftBar.getHeight() / 2);
 
-        rightBar.setTranslateX(GameDefaults.SCREEN_WIDTH-GameDefaults.BAR_WIDTH-200);
-        rightBar.setTranslateY(GameDefaults.SCREEN_HEIGHT/2 - rightBar.getHeight()/2);
+        rightBar.setTranslateX(GameDefaults.SCREEN_WIDTH - GameDefaults.BAR_WIDTH - 200);
+        rightBar.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2 - rightBar.getHeight() / 2);
         pane.getChildren().addAll(ball1, leftBar, rightBar);
     }
 }
