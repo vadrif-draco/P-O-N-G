@@ -31,7 +31,7 @@ public class Soundtrack {
     }
 
     public Soundtrack(Stage stage) {
-        a = new MediaPlayer(new Media(this.getClass().getResource("/media/rr.mp4").toString()));
+        a = new MediaPlayer(new Media(this.getClass().getResource("/media/rr.mp3").toString()));
         a.setAutoPlay(true);
         MediaView mv = new MediaView(a);
         Pane pane = new Pane(mv);
