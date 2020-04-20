@@ -64,11 +64,11 @@ public class GameDriver {
 
 
     // Debugging partition
-    Soundtrack timeIsNoMore;
+    private Soundtrack timeIsNoMore;
     private EventHandler<KeyEvent> handleKeyPress = e -> {
         if (e.getCode() == KeyCode.SHIFT) {
             shiftHeld = true;
-            new SFX("zawarudo_start", 1); // can't live without this :^)
+            new SFX("zawarudo_start.mp3", 1); // can't live without this :^)
             timeIsNoMore = new Soundtrack("awakening.mp3", -1);
         }
     };
@@ -76,7 +76,7 @@ public class GameDriver {
     private EventHandler<KeyEvent> handleKeyRelease = e -> {
         if (e.getCode() == KeyCode.SHIFT) {
             shiftHeld = false;
-            new SFX("zawarudo_end", 1); // can't live without this :^)
+            new SFX("zawarudo_end.mp3", 1); // can't live without this :^)
             timeIsNoMore.stop();
         }
     };

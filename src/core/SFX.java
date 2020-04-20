@@ -18,7 +18,7 @@ public class SFX {
     }
 
     public SFX(String s, int numOfLoops, double playRate) {
-        a = new AudioClip(this.getClass().getResource("/media/" + s + ".mp3").toString());
+        a = new AudioClip(this.getClass().getResource("/media/" + s).toString());
         a.setCycleCount(numOfLoops);
         a.setRate(playRate);
         a.play();

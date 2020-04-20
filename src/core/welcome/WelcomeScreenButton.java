@@ -1,5 +1,6 @@
 package core.welcome;
 
+import core.SFX;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -29,6 +30,7 @@ class WelcomeScreenButton extends Label {
                 e -> {
                     setCursor(Cursor.HAND);
                     setEffect(new DropShadow(8, Color.BLUE));
+                    new SFX("wsBtnSound.wav");
                     // TODO animate glow
                 });
 

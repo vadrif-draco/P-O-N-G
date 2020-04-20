@@ -109,14 +109,14 @@ public class WelcomeScreen extends Stage {
             }
         });
 
-        Timeline launchTimeline = new Timeline();
-
         if (globalDebugging) {
             this.setOpacity(0.75);
             bgSimulationPane.getChildren().add(pseudoConsole);
             startDebugging();
         } else {
-            // Fade in mechanism start
+
+            Timeline bgSimulationFadein = new Timeline();
+            // Background simulation fade in mechanism start
 
             // INITIAL STATE
             ColorAdjust adj = new ColorAdjust(0, -1, -1, 1);// Hue, Saturation, Brightness, Contrast
@@ -126,39 +126,70 @@ public class WelcomeScreen extends Stage {
             // END OF INITIAL STATE
 
             // NEXT STATES (in keyframed values)
-            KeyFrame k1 = new KeyFrame(Duration.millis(2000),
+            KeyFrame bgSimK1 = new KeyFrame(Duration.millis(2000),
                     new KeyValue(blur.radiusProperty(), 8),
                     new KeyValue(adj.saturationProperty(), -0.8),
                     new KeyValue(adj.brightnessProperty(), -0.95),
                     new KeyValue(adj.contrastProperty(), 0.75)
             );
 
-            KeyFrame k2 = new KeyFrame(Duration.millis(3500),
+            KeyFrame bgSimK2 = new KeyFrame(Duration.millis(3500),
                     new KeyValue(blur.radiusProperty(), 2),
                     new KeyValue(adj.saturationProperty(), 0),
                     new KeyValue(adj.brightnessProperty(), -0.5),
                     new KeyValue(adj.contrastProperty(), 0.5)
             );
 
-            KeyFrame k3 = new KeyFrame(Duration.millis(4000),
+            KeyFrame bgSimK3 = new KeyFrame(Duration.millis(4000),
                     new KeyValue(blur.radiusProperty(), 2),
                     new KeyValue(adj.saturationProperty(), 0),
                     new KeyValue(adj.brightnessProperty(), -0.5),
                     new KeyValue(adj.contrastProperty(), 0.5)
             );
 
-            KeyFrame k4 = new KeyFrame(Duration.millis(5000),
-                    new KeyValue(blur.radiusProperty(), 16, Interpolator.EASE_OUT),
+            KeyFrame bgSimK4 = new KeyFrame(Duration.millis(5000),
+                    new KeyValue(blur.radiusProperty(), 32, Interpolator.EASE_OUT),
                     new KeyValue(adj.saturationProperty(), 0, Interpolator.EASE_OUT),
                     new KeyValue(adj.brightnessProperty(), -0.25, Interpolator.EASE_OUT),
                     new KeyValue(adj.contrastProperty(), 0.1, Interpolator.EASE_OUT)
             );
 
             bgSimulationPane.setCacheHint(CacheHint.SPEED);
-            launchTimeline.getKeyFrames().addAll(k1, k2, k3, k4);
+            bgSimulationFadein.getKeyFrames().addAll(bgSimK1, bgSimK2, bgSimK3, bgSimK4);
 
-            launchTimeline.play(); // makes pane change effective periodically
-            // Fade in mechanism end
+            bgSimulationFadein.play(); // makes pane change effective periodically
+
+            // Background simulation fade in mechanism end
+
+            Timeline buttonsFadein = new Timeline();
+            // Buttons fade in mechanism start
+
+            KeyFrame buttonsK1 = new KeyFrame(Duration.millis(0),
+                    new KeyValue(buttonsPane.scaleXProperty(), 0.01),
+                    new KeyValue(buttonsPane.scaleYProperty(), 0.01),
+                    new KeyValue(buttonsPane.opacityProperty(), 0)
+            );
+
+            KeyFrame buttonsK2 = new KeyFrame(Duration.millis(4200), //blazeit
+                    new KeyValue(buttonsPane.scaleXProperty(), 0.01, Interpolator.EASE_BOTH),
+                    new KeyValue(buttonsPane.scaleYProperty(), 0.01, Interpolator.EASE_BOTH),
+                    new KeyValue(buttonsPane.opacityProperty(), 0.1)
+            );
+
+            KeyFrame buttonsK3 = new KeyFrame(Duration.millis(4500),
+                    new KeyValue(buttonsPane.scaleXProperty(), 1.25, Interpolator.EASE_BOTH),
+                    new KeyValue(buttonsPane.scaleYProperty(), 1.25, Interpolator.EASE_BOTH),
+                    new KeyValue(buttonsPane.opacityProperty(), 0.1)
+            );
+
+            KeyFrame buttonsK4 = new KeyFrame(Duration.millis(5000),
+                    new KeyValue(buttonsPane.scaleXProperty(), 1, Interpolator.EASE_IN),
+                    new KeyValue(buttonsPane.scaleYProperty(), 1, Interpolator.EASE_IN),
+                    new KeyValue(buttonsPane.opacityProperty(), 1)
+            );
+
+            buttonsFadein.getKeyFrames().addAll(buttonsK1, buttonsK2, buttonsK3, buttonsK4);
+            buttonsFadein.play();
         }
 
         show();
