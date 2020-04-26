@@ -14,7 +14,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+
+import static core.DebugSystem.println;
+import static core.welcome.WelcomeScreenDefaults.screenHeight;
+import static core.welcome.WelcomeScreenDefaults.screenWidth;
 
 
 public class GameDriver {
@@ -25,6 +30,10 @@ public class GameDriver {
     private Pane pane;
     private boolean started = false;
     private Label clickLabel;
+    private Label leftScore;
+    private Label rightScore;
+    private static Label timer;
+    private double currentTime = 5;
 
     // Debugging variables
     private boolean shiftHeld = false;
@@ -46,12 +55,37 @@ public class GameDriver {
         gameLoop.getKeyFrames().add(kf);
         gameLoop.play();
 
-        clickLabel = new Label("Mouse Click");
-        clickLabel.setLayoutX(GameDefaults.SCREEN_WIDTH / 2 - 120);
-        clickLabel.setLayoutY(GameDefaults.SCREEN_HEIGHT / 4);
+        clickLabel = new Label("CLICK TO START");
+        clickLabel.setLayoutX(GameDefaults.SCREEN_WIDTH / 2 - 175); //TODO FIX ORIENTATION
+        clickLabel.setLayoutY(GameDefaults.SCREEN_HEIGHT / 2);
         clickLabel.setFont(Font.font("Fira Code", 48));
-        clickLabel.setTextFill(Color.LIGHTSKYBLUE);
+        clickLabel.setTextFill(Color.WHITE);
+        clickLabel.setTextAlignment(TextAlignment.CENTER);
         pane.getChildren().add(clickLabel);
+
+        int LS = p1.getScore();
+        leftScore = new Label(String.valueOf(LS));
+        leftScore.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE;");
+        leftScore.setLayoutX(screenWidth() * 0.2);
+        leftScore.setLayoutY(screenHeight() / 12);
+
+        int RS = p2.getScore();
+        rightScore = new Label(String.valueOf(RS));
+        rightScore.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE");
+        rightScore.setLayoutX(screenWidth() * 0.8);
+        rightScore.setLayoutY(screenHeight() / 12);
+
+        //TODO FIX THE ORIENTATION
+
+        pane.getChildren().add(leftScore);
+        pane.getChildren().add(rightScore);
+
+        timer = new Label(String.valueOf(Math.floor(currentTime)));
+        timer.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE");
+        timer.setLayoutX(screenWidth() * 0.5 - 100);
+        timer.setLayoutY(screenHeight() / 12);
+
+        pane.getChildren().add(timer);
 
         //Start/Pause on Mouse Click
         pane.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -110,6 +144,7 @@ public class GameDriver {
             if (ball1.getTranslateX() > GameDefaults.SCREEN_WIDTH + ball1.getRadius()) {
                 started = false;
                 p2.setScore(p2.getScore() + 1);
+                leftScore.setText(String.valueOf(p2.getScore()));
                 reset();
             }
 
@@ -117,6 +152,7 @@ public class GameDriver {
             if (ball1.getTranslateX() < -ball1.getRadius()) {
                 started = false;
                 p1.setScore(p1.getScore() + 1);
+                rightScore.setText(String.valueOf(p1.getScore()));
                 reset();
             }
 
@@ -133,7 +169,14 @@ public class GameDriver {
 
             //TODO Ball bounce direction depends on where it hits the bar
 
-
+            if (started) {
+                currentTime -= 1.0 / 60;
+                timer.setText(String.valueOf(Math.floor(currentTime) + 1));
+                if (currentTime <= 0) {
+                    started = !started;
+                    reset();
+                }
+            }
             // Debugging Partition
 
             // Slow ball down if SHIFT key held (for debugging purposes, for now.
@@ -166,6 +209,7 @@ public class GameDriver {
     private void reset() {
         ball1.setTranslateX(GameDefaults.SCREEN_WIDTH / 2);
         ball1.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2);
+        currentTime = 5;
     }
 
 }

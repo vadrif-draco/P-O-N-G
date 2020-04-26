@@ -1,7 +1,9 @@
 package core.game;
 
 
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -9,6 +11,10 @@ import javafx.scene.shape.Line;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import static core.DebugSystem.println;
+import static core.welcome.WelcomeScreenDefaults.screenHeight;
+import static core.welcome.WelcomeScreenDefaults.screenWidth;
 
 
 public class GamePlayStage extends Stage {
@@ -44,6 +50,8 @@ public class GamePlayStage extends Stage {
         Player player2 = new KeyboardPlayer(leftBar, scene);
 
         GameDriver gd = new GameDriver(ball1, player1, player2, pane);
+//        scene.setCursor(Cursor.NONE);
+
     }
 
 
@@ -62,8 +70,8 @@ public class GamePlayStage extends Stage {
         circle.setFill(Color.valueOf("#404040"));
 
         Line line = new Line();
-        line.setStartX(GameDefaults.SCREEN_WIDTH / 2);
-        line.setEndX(GameDefaults.SCREEN_WIDTH / 2);
+        line.setStartX(screenWidth() / 2);
+        line.setEndX(screenWidth() / 2);
         line.setStartY(0);
         line.setEndY(GameDefaults.SCREEN_HEIGHT);
         line.setFill(Color.WHITE);
@@ -73,6 +81,7 @@ public class GamePlayStage extends Stage {
 
         pane.getChildren().add(circle);
         pane.getChildren().add(line);
+//        pane.getChildren().add(leftScore);
     }
 
     /**
@@ -88,6 +97,7 @@ public class GamePlayStage extends Stage {
 
         rightBar.setTranslateX(GameDefaults.SCREEN_WIDTH - GameDefaults.BAR_WIDTH - 200);
         rightBar.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2 - rightBar.getHeight() / 2);
+
         pane.getChildren().addAll(ball1, leftBar, rightBar);
     }
 }

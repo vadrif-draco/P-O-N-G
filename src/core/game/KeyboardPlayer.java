@@ -31,9 +31,11 @@ public class KeyboardPlayer extends Player {
         EventHandler<KeyEvent> pressedHandler = e -> {
             switch (e.getCode()) {
                 case UP:
+                case W:
                     isUp = true;
                     break;
                 case DOWN:
+                case S:
                     isDown = true;
                     break;
             }
@@ -44,9 +46,11 @@ public class KeyboardPlayer extends Player {
         EventHandler<KeyEvent> releasedHandler = e -> {
             switch (e.getCode()) {
                 case UP:
+                case W:
                     isUp = false;
                     break;
                 case DOWN:
+                case S:
                     isDown = false;
                     break;
             }

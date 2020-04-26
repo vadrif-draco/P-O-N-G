@@ -1,6 +1,8 @@
 package core.welcome;
 
 import core.Soundtrack;
+import core.UI.Parallax;
+import core.game.GameDriver;
 import core.game.GamePlayStage;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -26,7 +28,7 @@ import static core.DebugSystem.*;
 import static core.welcome.WelcomeScreenDefaults.screenHeight;
 import static core.welcome.WelcomeScreenDefaults.screenWidth;
 
-public class WelcomeScreen extends Stage {
+public class WelcomeScreen extends Stage implements Parallax{
 
     public WelcomeScreen(boolean globalDebugging) {
         Bar l = new Bar("left");
@@ -192,6 +194,9 @@ public class WelcomeScreen extends Stage {
             buttonsFadein.play();
         }
 
+        frontPane.setOnMouseMoved(e -> {
+            parallax(e.getX(), e.getY(), buttonsPane);
+        });
         show();
     }
 }
