@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.stage.Screen;
 
 public final class GameDefaults {
-    private GameDefaults(){};
+    private GameDefaults(){}
 
     public static final double SCREEN_WIDTH = Screen.getPrimary().getBounds().getWidth();
     public static final double SCREEN_HEIGHT = Screen.getPrimary().getBounds().getHeight();
@@ -16,4 +16,5 @@ public final class GameDefaults {
     public static final DoubleProperty BALL_SPEED = new SimpleDoubleProperty(5);
     public static final double FRAME_RATE = 60;
 
+    public static double initTime = 25;
 }

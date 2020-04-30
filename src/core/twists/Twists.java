@@ -1,0 +1,5 @@
+package core.twists;
+
+public enum Twists {
+    MULTIBALL, CLOSINGBARS, SQUASH, FLASHLIGHT, PLATFORMING, SUDDEN_DEATH, BLACKHOLE
+}

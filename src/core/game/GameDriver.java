@@ -2,6 +2,8 @@ package core.game;
 
 import core.SFX;
 import core.Soundtrack;
+import core.UI.InGameScores;
+import core.twists.Twists;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -33,7 +35,14 @@ public class GameDriver {
     private Label leftScore;
     private Label rightScore;
     private static Label timer;
-    private double currentTime = 5;
+    private double currentTime;
+
+    private Twists [] twists = Twists.values();
+    private Twists randTwist;
+
+    private boolean closeIn = false;
+    private boolean moveOut = false;
+    private boolean rightBound = true;
 
     // Debugging variables
     private boolean shiftHeld = false;
@@ -63,28 +72,17 @@ public class GameDriver {
         clickLabel.setTextAlignment(TextAlignment.CENTER);
         pane.getChildren().add(clickLabel);
 
-        int LS = p1.getScore();
-        leftScore = new Label(String.valueOf(LS));
-        leftScore.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE;");
-        leftScore.setLayoutX(screenWidth() * 0.2);
-        leftScore.setLayoutY(screenHeight() / 12);
+        //In-game UI 'n' stuff
+        InGameScores igs = new InGameScores(p1, p2);
 
-        int RS = p2.getScore();
-        rightScore = new Label(String.valueOf(RS));
-        rightScore.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE");
-        rightScore.setLayoutX(screenWidth() * 0.8);
-        rightScore.setLayoutY(screenHeight() / 12);
-
-        //TODO FIX THE ORIENTATION
+        igs.initUI();
+        leftScore = igs.getLeftScore();
+        rightScore = igs.getRightScore();
+        timer = igs.getTimer();
+        currentTime = GameDefaults.initTime;
 
         pane.getChildren().add(leftScore);
         pane.getChildren().add(rightScore);
-
-        timer = new Label(String.valueOf(Math.floor(currentTime)));
-        timer.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE");
-        timer.setLayoutX(screenWidth() * 0.5 - 100);
-        timer.setLayoutY(screenHeight() / 12);
-
         pane.getChildren().add(timer);
 
         //Start/Pause on Mouse Click
@@ -171,12 +169,42 @@ public class GameDriver {
 
             if (started) {
                 currentTime -= 1.0 / 60;
-                timer.setText(String.valueOf(Math.floor(currentTime) + 1));
+                timer.setText(String.valueOf(Math.floor(currentTime) + 1)); //TODO rounding
                 if (currentTime <= 0) {
                     started = !started;
                     reset();
                 }
             }
+
+            if (currentTime == 25) {
+//                int randVal = (int)(Math.random() * 7); //TODO WHY DOES IT MOVE EVEN WHEN FALSE
+//                randTwist = twists[randVal];
+                randTwist = Twists.CLOSINGBARS;
+            }
+
+            if (randTwist == Twists.CLOSINGBARS){
+                if (p2.getBar().getTranslateX() < (screenWidth() / 4) && rightBound){
+                    closeIn = true;
+                    moveOut = false;
+                }
+                else if (p2.getBar().getTranslateX() > (200)){
+                    closeIn = false;
+                    moveOut = true;
+                    rightBound = false;
+                }
+                else rightBound = true;
+            }
+
+            if (closeIn && started){
+                p1.getBar().setTranslateX(p1.getBar().getTranslateX() - 0.25);
+                p2.getBar().setTranslateX(p2.getBar().getTranslateX() + 0.25);
+            }
+
+            if (moveOut && started){
+                p1.getBar().setTranslateX(p1.getBar().getTranslateX() + 0.25);
+                p2.getBar().setTranslateX(p2.getBar().getTranslateX() - 0.25);
+            }
+
             // Debugging Partition
 
             // Slow ball down if SHIFT key held (for debugging purposes, for now.
@@ -209,7 +237,9 @@ public class GameDriver {
     private void reset() {
         ball1.setTranslateX(GameDefaults.SCREEN_WIDTH / 2);
         ball1.setTranslateY(GameDefaults.SCREEN_HEIGHT / 2);
-        currentTime = 5;
+        currentTime = GameDefaults.initTime;
+        closeIn = false;
+        moveOut = false;
     }
 
 }
