@@ -240,6 +240,11 @@ public class GameDriver {
         currentTime = GameDefaults.initTime;
         closeIn = false;
         moveOut = false;
+        p2.getBar().setTranslateX(200);
+        p2.getBar().setTranslateY(GameDefaults.SCREEN_HEIGHT / 2 - p2.getBar().getHeight() / 2);
+
+        p1.getBar().setTranslateX(GameDefaults.SCREEN_WIDTH - GameDefaults.BAR_WIDTH - 200);
+        p1.getBar().setTranslateY(GameDefaults.SCREEN_HEIGHT / 2 - p1.getBar().getHeight() / 2);
     }
 
 }
