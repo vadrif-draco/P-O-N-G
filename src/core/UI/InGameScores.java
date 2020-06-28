@@ -39,7 +39,7 @@ public class InGameScores {
         rightScore.setLayoutY(screenHeight() / 2 - 325);
         rightScore.setOpacity(0.3);
 
-        timer = new Label(String.valueOf(Math.floor(initTime)));
+        timer = new Label(String.valueOf((int)initTime));
         timer.setStyle("-fx-font-size: 150; -fx-text-fill: WHITE");
         timer.setLayoutX(screenWidth() * 0.5 - 100);
         timer.setLayoutY(screenHeight() / 12);

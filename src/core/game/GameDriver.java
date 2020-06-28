@@ -19,6 +19,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static core.DebugSystem.println;
 import static core.welcome.WelcomeScreenDefaults.screenHeight;
 import static core.welcome.WelcomeScreenDefaults.screenWidth;
@@ -36,6 +39,7 @@ public class GameDriver {
     private Label rightScore;
     private static Label timer;
     private double currentTime;
+    Double truncatedDouble;
 
     private Twists [] twists = Twists.values();
     private Twists randTwist;
@@ -169,7 +173,14 @@ public class GameDriver {
 
             if (started) {
                 currentTime -= 1.0 / 60;
-                timer.setText(String.valueOf(Math.floor(currentTime) + 1)); //TODO rounding
+                if (currentTime > 10)
+                    timer.setText(String.valueOf((int)currentTime)); //TODO rounding
+                else if (currentTime > 0 ) {
+                    truncatedDouble = BigDecimal.valueOf(currentTime)
+                            .setScale(1, RoundingMode.HALF_UP)
+                            .doubleValue();
+                    timer.setText(String.valueOf(truncatedDouble));
+                }
                 if (currentTime <= 0) {
                     started = !started;
                     reset();

@@ -36,7 +36,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage = new WelcomeScreen(true); // Launches welcome screen
+        stage = new WelcomeScreen(false); // Launches welcome screen
         // The debugging variable is global here, it affects everything that is debuggable.
         // Can be toggled individually later per each class in its own way.
 
